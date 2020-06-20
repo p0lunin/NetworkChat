@@ -389,7 +389,7 @@ export class BackendServer implements Server {
     async hello(token: string): Promise<User> {
         return await makeRequest(this.baseUrl, ["users", "hello"], createHeaders(token), (input) => {
             if (input.LastUpdateId) {
-                this.update_from = input.LastUpdateId;
+                this.update_from = input.LastUpdateId + 1;
                 return parseUser(input.User);
             }
             else {
@@ -440,7 +440,7 @@ export class BackendServer implements Server {
     async removeUserFromChat(token: string, chatId: number, username: string): Promise<true> {
         return await makeRequest(
             this.baseUrl, 
-            ["chats", chatId, `delete?remove-user=${username}`], 
+            ["chats", chatId, `remove-user?username=${username}`], 
             createHeaders(token), 
             () => true,
         );

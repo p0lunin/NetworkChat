@@ -52,6 +52,14 @@ namespace NetworkChat.Repositories
         }
         public void DeleteChat(Chat chat)
         {
+            foreach (var member in chat.Members)
+            {
+                ctx.Remove(member);
+            }
+            foreach (var message in chat.Messages)
+            {
+                ctx.Remove(message);
+            }
             ctx.Chats.Remove(chat);
             ctx.SaveChanges();
         }

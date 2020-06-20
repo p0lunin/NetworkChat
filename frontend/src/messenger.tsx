@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme: Theme) =>
       color: theme.palette.getContrastText(red[500]),
       backgroundColor: red[500],
     },
+    chatInfoWidth: {
+      width: 300,
+    }
   }),
 );
 
@@ -267,19 +270,29 @@ function ChatInfo(props: ChatInfoProps) {
   const {chat, open, onClose, onAddUser, onDeleteChat, onRemoveUser} = props;
   return (
     <Dialog open={open} onClose={onClose}>
-      <MuiDialogTitle disableTypography>
-        <Avatar>{chat.title[0]}</Avatar>
-        <h4>chat.title</h4>
-        <IconButton aria-label="close" onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      </MuiDialogTitle>
-      <ButtonDeleteChat chat={chat} onDelete={onDeleteChat} />
-      <hr></hr>
-      <p>Users:</p>
-      <ButtonRemoveUser onRemove={(username) => onRemoveUser(username, chat)}/>
-      <ButtonAddUser onAdd={(username) => onAddUser(username, chat)} />
-      <UsersList users={chat.members.map(m => m.user)} />
+      <Box width="300px">
+        <MuiDialogTitle disableTypography>
+          <Box display="flex" flexDirection="row" justifyContent="space-between">
+            <Box flexGrow="2">
+              <Avatar>{chat.title[0]}</Avatar>
+            </Box>
+            <Box flexGrow="8">
+              {chat.title}
+            </Box>
+            <Box flexGrow="1">
+              <IconButton aria-label="close" onClick={onClose}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </MuiDialogTitle>
+        <ButtonDeleteChat chat={chat} onDelete={onDeleteChat} />
+        <hr></hr>
+        <p>Users:</p>
+        <ButtonRemoveUser onRemove={(username) => onRemoveUser(username, chat)}/>
+        <ButtonAddUser onAdd={(username) => onAddUser(username, chat)} />
+        <UsersList users={chat.members.map(m => m.user)} />
+      </Box>
     </Dialog>
   );
 }
@@ -658,13 +671,6 @@ export function Messenger(props: MessengerProps) {
     const onSendTextMessage = async (chat_id: number, text: string) => {
       try {
         const mes = await server.sendTextMessage(token, chat_id, text);
-        setChats(chats => chats.map(chat => {
-          if (chat.id == chat_id) {
-            chat.messages.push(mes);
-            console.log(mes);
-          }
-          return chat;
-        }));
       }
       catch (e) {
         props.onError(<Error message={errorToShowed(e)}/>);
@@ -674,12 +680,6 @@ export function Messenger(props: MessengerProps) {
     const onSendFile = async (chat_id: number, file: File) => {
       try {
         const mes = await server.sendFile(token, chat_id, file);
-        setChats(chats => chats.map(chat => {
-          if (chat.id == chat_id) {
-            chat.messages.push(mes);
-          }
-          return chat;
-        }));
       }
       catch (e) {
         props.onError(<Error message={errorToShowed(e)}/>);
@@ -689,12 +689,6 @@ export function Messenger(props: MessengerProps) {
     const onSendImage = async (chat_id: number, file: File) => {
       try {
         const mes = await server.sendImage(token, chat_id, file);
-        setChats(chats => chats.map(chat => {
-          if (chat.id == chat_id) {
-            chat.messages.push(mes);
-          }
-          return chat;
-        }));
       }
       catch (e) {
         props.onError(<Error message={errorToShowed(e)}/>);
@@ -761,15 +755,24 @@ export function Messenger(props: MessengerProps) {
                 });
                 break;
               case UpdateType.RemoveMember:
-                setChats(chats => chats.map(chat => {
-                  if (chat.id == upd.chat_id) {
-                    const idx = chat.members.findIndex(m => m.user.name == upd.member_username);
-                    if (idx != -1) {
-                      chat.members.splice(idx, 1);
+                if (upd.member_username == myName) {
+                  setChats(chats => {
+                    const idx = chats.findIndex(chat => chat.id == upd.chat_id);
+                    chats.splice(idx, 1);
+                    return chats;
+                  });
+                }
+                else {
+                  setChats(chats => chats.map(chat => {
+                    if (chat.id == upd.chat_id) {
+                      const idx = chat.members.findIndex(m => m.user.name == upd.member_username);
+                      if (idx != -1) {
+                        chat.members.splice(idx, 1);
+                      }
                     }
-                  }
-                  return chat;
-                }));
+                    return chat;
+                  }));
+                }
                 break;
               case UpdateType.RemoveOnlineUser:
                 setUsers(users => users.map(user => {

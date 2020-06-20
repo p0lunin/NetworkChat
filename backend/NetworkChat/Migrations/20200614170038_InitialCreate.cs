@@ -64,13 +64,13 @@ namespace NetworkChat.Migrations
                         column: x => x.ChatID,
                         principalTable: "Chats",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ChatMembers_Users_UserName",
                         column: x => x.UserName,
                         principalTable: "Users",
                         principalColumn: "Name",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

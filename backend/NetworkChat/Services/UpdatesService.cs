@@ -82,7 +82,7 @@ namespace NetworkChat.Services
                     case RemoveChatUpdate u:
                         return u.RemoveChat.IsUserInChat(username);
                     case RemoveMemberUpdate m:
-                        return m.Chat.IsUserInChat(username);
+                        return m.Chat.IsUserInChat(username) || m.RemoveMemberUsername == username;
                     default:
                         throw new Exception("Unexpected update type!");
                 }
