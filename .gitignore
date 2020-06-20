@@ -24,9 +24,9 @@ yarn-error.log*
 
 package-lock.json
 *.vs
-*.sln
 bin/
 node_modules/
 .idea/
 .vs/
 NetworkChatTests/
+*.db
